@@ -20,7 +20,13 @@ def read_input(input_location):
 		m = m.replace('\n', '')
 		temp_set = m.split(', ')
 		# temp_set = set(temp_set)
+		temp_set =  map(int,temp_set)
 		list_of_transactions.append(temp_set)
+		for i in temp_set:
+			if i in list_of_items:
+				continue
+			else:
+				list_of_items.append(i)
 
 # Read and parse parameter-list and store each value to appropriate lists
 def read_parameter(parameter_location):
@@ -36,7 +42,7 @@ def read_parameter(parameter_location):
 			temp_mis = i[1]
 			temp_mis = temp_mis.replace('\']', '')
 			temp_mis = temp_mis.replace(' ', '')
-			list_of_mis.append({item_no: temp_mis})
+			list_of_mis.append({int(item_no): float(temp_mis)})
 		# Parse and store SDC
 		elif "SDC" in i:
 			i = i.split(' = ')
@@ -66,6 +72,8 @@ if len(sys.argv) == 3:
 	# MS_Apriori(list_of_transactions, list_of_mis, SDC)
 	#print(list_of_items)
 	print(list_of_transactions)
-	#print(list_of_mis)
+	print("*****************")
+	print(list_of_items)
+	print(list_of_mis)
 else:
 	print("Please run as python ms-apriori.py [input_file].txt [parameter_file].txt")

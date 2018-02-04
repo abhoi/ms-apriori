@@ -6,22 +6,18 @@ import re
 mis_dict = {}
 # List of given transactions
 list_of_transactions = []
-# List of cannot-be_together sets
+# List of cannot_be_together sets
 list_of_cbt = []
 # List of items
 list_of_items = []
-
 # List of sorted items based on the priority
 list_of_ordered_items = []
-# Support difference constraint (phi)
-SDC = 0.0
-# Support Dictionary - Contains MIS and Support count for all items
+# Support difference constraint (0 <= phi <= 1)
+sdc = 0.0
+# Support dictionary {item_no: {support_count: }, {support: }, {mis: }}
 support_dict = {}
-
 # List of must-have items
 list_of_mh = []
-# Support difference constraint (phi)
-sdc = 0.0
 
 
 # Read and parse input file and store each transaction to list_of_transactions
@@ -35,38 +31,39 @@ def read_input(input_location):
 		for i in m:
 			if i not in list_of_items:
 				list_of_items.append(i)
-	print(list_of_transactions)
-	print(list_of_items)
 
 # Read and parse parameter-list and store each value to appropriate lists
 def read_parameter(parameter_location):
 	parameter_file = open(parameter_location, "r")
 	for index, i in enumerate(parameter_file):
-		# Parse MIS to list_of_mis
+		# Parse MIS to mis_dict
 		if 'MIS' in i:
 			s = re.findall(r'(\d+)', i)
 			item_no = int(s[0])
 			mis_value = float(s[1] + '.' + s[2])
 			mis_dict.update({item_no: mis_value})
+		# Parse SDC to sdc
 		elif 'SDC' in i:
 			s = re.findall(r'\d+\.\d+', i)
 			sdc = float(s[0])
+		# Parse cannot_be_together to list_of_cbt
 		elif 'cannot_be_together' in i:
 			s = re.findall(r'{\d+[, \d+]*}', i)
 			for e in s:
 				e = re.findall(r'\d+', e)
 				e = [int(x) for x in e]
 				list_of_cbt.append(e)
+		# Parse must-have to list_of_mh
 		elif 'must-have' in i:
 			s = re.findall(r'\d+', i)
 			s = [int(x) for x in s]
 			list_of_mh = s
 
-
-
+# Sort items based on key
 def sort_items_on_mis(item_list):
 	return sorted(item_list, key = mis_dict.get)
 
+# Calculate support and support-count for each unique item
 def calculate_support():
 	for transaction in list_of_transactions:
 		for item in transaction:
@@ -84,8 +81,6 @@ def calculate_support():
 		details_dict = support_dict[item]
 		details_dict['support'] = round(float(details_dict['support_count'])/transaction_len, 2)
 		
-
-
 # Check for command line arguments
 if len(sys.argv) == 3:
 	read_parameter(str(sys.argv[2]))

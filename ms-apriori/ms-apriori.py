@@ -87,6 +87,67 @@ def generate_F1_itemsets(L):
 	for i in L:
 		if (support_dict.get(i).get('support') < support_dict.get(i).get('mis')):
 			L.remove(i)
+		generate_item_sets(L)
+
+# Generate F(k-1) item-sets
+def generate_item_sets(L):
+	k = 2
+	freq_item_set = []
+	Ck_count_dict = {}
+	while (k == 2 or len(freq_item_set) > 1):
+		print(list_of_transactions)
+		if k == 2:
+			print("Level 2 candidate generation")
+			Ck = level2_candidate_gen(L, sdc) # k = 2
+			print(Ck)
+			for c in Ck:
+				Ck_count_dict.update({str(c): 0})
+		else:
+			print("Level k > 2 candidate generation")
+			Ck = MScandidate_gen(freq_item_set, sdc)
+
+		for t in list_of_transactions:
+			for c in Ck:
+				if set(c).issubset(set(t)):
+					Ck_count_dict[str(c)] += 1
+
+		for c in Ck:
+			if Ck_count_dict.get(str(c)) / len(list_of_transactions) >= support_dict.get(c[0]).get('mis'):
+				freq_item_set.append(c)
+				# Used for rule generation (f-a)
+				# if set(c[1:]).issubset(set(t)):
+				# 	if str(c[1:]) in Ck_count_dict:
+				# 		Ck_count_dict[str(c[1:])] += 1
+				# 	else:
+				# 		Ck_count_dict.update({str(c[1:]): 1})
+		print(Ck_count_dict)
+		print(freq_item_set)
+		k += 1
+def level2_candidate_gen(L, sdc):
+	c2 = []
+	for l in L:
+		l_mis = 0.0
+		l_supp = 0.0
+		if support_dict.get(l).get('support') >= support_dict.get(l).get('mis'):
+			l_mis = support_dict.get(l).get('mis')
+			l_supp = support_dict.get(l).get('support')
+			for h in L[L.index(l) + 1:]:
+				if (support_dict.get(h).get('support')) >= l_mis and ((support_dict.get(h).get('support') - l_supp) <= sdc):
+					c2.append([l, h])
+	return c2
+
+def MScandidate_gen(freq_item_set, sdc):
+	Ck = []
+	f1 = []
+	f2 = []
+	for i in range(len(freq_item_set)):
+		f1 = freq_item_set[i][0:-1]
+		for j in range(i + 1, len(freq_item_set)):
+			f2 = freq_item_set[j][0:-1]
+			if (f1 == f2) and (support_dict.get(freq_item_set[i][-1]).get('support') - support_dict.get(freq_item_set[j][-1]).get('support') <= sdc):
+				c = freq_item_set[i].append(freq_item_set[j][-1])
+				Ck.append(c)
+				# Generate (k-1) subsets s for each c
 
 # Check for command line arguments
 if len(sys.argv) == 3:

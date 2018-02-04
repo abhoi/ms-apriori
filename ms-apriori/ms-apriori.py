@@ -62,9 +62,6 @@ def read_parameter(parameter_location):
 			i = i.replace('\n', '')
 			i = i.split(' or ')
 
-# def MS_Apriori(T, MS, SDC):
-	
-
 # Check for command line arguments
 if len(sys.argv) == 3:
 	read_parameter(str(sys.argv[2]))

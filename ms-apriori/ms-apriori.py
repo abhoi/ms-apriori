@@ -1,6 +1,7 @@
 import sys
 import csv
 import re
+import itertools
 
 # List of values and their respective MIS values
 mis_dict = {}
@@ -23,6 +24,7 @@ def read_input(input_location):
 	# Open input_location and parse line by line
 	input_file = open(input_location, "r")
 	for mindex, m in enumerate(input_file):
+		# Find all ints, put into a list, then append them to list_of_items
 		m = re.findall(r'\d+', m)
 		m = list(map(int, m))
 		list_of_transactions.append(m)
@@ -59,58 +61,76 @@ def read_parameter(parameter_location):
 
 # Calculate support and support-count for each unique item
 def calculate_support():
+	# Calculate the support count of each item in transaction
 	for transaction in list_of_transactions:
 		for item in transaction:
 			if item in list(support_dict.keys()):
 				support_dict[item]['support_count'] += 1
 			else:
 				support_dict.update({item: {'support_count': 1, 'support': 0, 'mis': mis_dict[item]}})
-	transaction_len = len(list_of_transactions)
+
+	# For each unique item in support-dict, calculate support for each item
 	for item in list(support_dict.keys()):
-		support_dict[item]['support'] = round(float(support_dict[item]['support_count']) / transaction_len, 3)
+		support_dict[item]['support'] = round(float(support_dict[item]['support_count']) / len(list_of_transactions), 3)
+	# Sort list_of_items based on mis values
 	list_of_items.sort(key=lambda x: mis_dict.get(x), reverse=False)
+
 # First pass to generate seeds L
 def init_pass(M, T):
+	# Generate empty seed L
 	L = []
+	# Store value of minimum MIS for each itemset
 	min_mis = 0.0
 	for i in M:
+		# If support >= mis first item, then append to L
 	 	if (support_dict.get(i).get('support') >= support_dict.get(i).get('mis')) and min_mis == 0.0:
 	 		min_mis = support_dict.get(i).get('mis')
 	 		L.append(i)
+	 	# For every element after first item, append if support >= min_mis
 	 	elif min_mis != 0.0:
 	 		if (support_dict.get(i).get('support') >= min_mis):
 	 			L.append(i)
+	# Generate 1-itemsets using L
 	generate_F1_itemsets(L)
 
 # Generate F1 item-sets
 def generate_F1_itemsets(L):
+	# For each item in L, if support < mis, prune it from L
 	for i in L:
 		if (support_dict.get(i).get('support') < support_dict.get(i).get('mis')):
 			L.remove(i)
-		generate_item_sets(L)
+	generate_item_sets(L)
 
 # Generate F(k-1) item-sets
 def generate_item_sets(L):
 	k = 2
+	# Declare Fk
 	freq_item_set = []
+	# Declare dictionary to hold c.count
 	Ck_count_dict = {}
+	# For k >= 2 and while Fk != empty
 	while (k == 2 or len(freq_item_set) > 1):
-		print(list_of_transactions)
+		# If k == 2, run generate 2-itemsets
 		if k == 2:
 			print("Level 2 candidate generation")
 			Ck = level2_candidate_gen(L, sdc) # k = 2
 			print(Ck)
+			# Update c.count as 0 for each item
 			for c in Ck:
 				Ck_count_dict.update({str(c): 0})
+		# If k > 2, generate Fk itemset from Fk-1 itemsets
 		else:
 			print("Level k > 2 candidate generation")
 			Ck = MScandidate_gen(freq_item_set, sdc)
 
+		# For each transaction t in T
 		for t in list_of_transactions:
+			# For each candidate c in Ck
 			for c in Ck:
+				# If c is contained in t, increment c.count by 1
 				if set(c).issubset(set(t)):
 					Ck_count_dict[str(c)] += 1
-
+		# For each candidate c in Ck, if support of c >= c[0].mis, append to Fk
 		for c in Ck:
 			if Ck_count_dict.get(str(c)) / len(list_of_transactions) >= support_dict.get(c[0]).get('mis'):
 				freq_item_set.append(c)
@@ -122,7 +142,9 @@ def generate_item_sets(L):
 				# 		Ck_count_dict.update({str(c[1:]): 1})
 		print(Ck_count_dict)
 		print(freq_item_set)
+		# Increment k
 		k += 1
+
 def level2_candidate_gen(L, sdc):
 	c2 = []
 	for l in L:
@@ -140,14 +162,19 @@ def MScandidate_gen(freq_item_set, sdc):
 	Ck = []
 	f1 = []
 	f2 = []
+	combinations = []
+	print(freq_item_set)
 	for i in range(len(freq_item_set)):
 		f1 = freq_item_set[i][0:-1]
 		for j in range(i + 1, len(freq_item_set)):
 			f2 = freq_item_set[j][0:-1]
 			if (f1 == f2) and (support_dict.get(freq_item_set[i][-1]).get('support') - support_dict.get(freq_item_set[j][-1]).get('support') <= sdc):
-				c = freq_item_set[i].append(freq_item_set[j][-1])
+				freq_item_set[i].append(freq_item_set[j][-1])
+				c = freq_item_set[i]
 				Ck.append(c)
 				# Generate (k-1) subsets s for each c
+		
+
 
 # Check for command line arguments
 if len(sys.argv) == 3:

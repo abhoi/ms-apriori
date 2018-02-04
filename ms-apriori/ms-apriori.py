@@ -10,10 +10,19 @@ list_of_transactions = []
 list_of_cbt = []
 # List of items
 list_of_items = []
+
+# List of sorted items based on the priority
+list_of_ordered_items = []
+# Support difference constraint (phi)
+SDC = 0.0
+# Support Dictionary - Contains MIS and Support count for all items
+support_dict = {}
+
 # List of must-have items
 list_of_mh = []
 # Support difference constraint (phi)
 sdc = 0.0
+
 
 # Read and parse input file and store each transaction to list_of_transactions
 def read_input(input_location):
@@ -53,9 +62,42 @@ def read_parameter(parameter_location):
 			s = [int(x) for x in s]
 			list_of_mh = s
 
+
+
+def sort_items_on_mis(item_list):
+	return sorted(item_list, key = mis_dict.get)
+
+def calculate_support():
+	for transaction in list_of_transactions:
+		for item in transaction:
+			if item in list(support_dict.keys()):
+				details_dict = support_dict[item]
+				details_dict['support_count'] = details_dict['support_count'] + 1
+			else:
+				details_dict = {}
+				details_dict['support_count'] = 1
+				details_dict['mis'] = mis_dict[item]
+				support_dict[item] = details_dict
+	
+	transaction_len = len(list_of_transactions)
+	for item in list(support_dict.keys()):
+		details_dict = support_dict[item]
+		details_dict['support'] = round(float(details_dict['support_count'])/transaction_len, 2)
+		
+
+
 # Check for command line arguments
 if len(sys.argv) == 3:
 	read_parameter(str(sys.argv[2]))
 	read_input(str(sys.argv[1]))
+
+	list_of_ordered_items = sort_items_on_mis(list_of_items)
+	calculate_support()
+	print(list_of_items)
+	print(mis_dict)
+	print(list_of_transactions)
+	print(list_of_ordered_items)	
+	print(support_dict)
+
 else:
 	print("Please run as python ms-apriori.py [input_file].txt [parameter_file].txt")

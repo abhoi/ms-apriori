@@ -20,18 +20,14 @@ def read_input(input_location):
 	# Open input_location and parse line by line
 	input_file = open(input_location, "r")
 	for mindex, m in enumerate(input_file):
-		m = m.replace('{', '')
-		m = m.replace('}', '')
-		m = m.replace('\n', '')
-		temp_set = m.split(', ')
-		temp_set = map(int, temp_set)
-		temp_set = list(temp_set)
-		list_of_transactions.append(temp_set)
-		for i in temp_set:
-			if i in list_of_items:
-				continue
-			else:
+		m = re.findall(r'\d+', m)
+		m = list(map(int, m))
+		list_of_transactions.append(m)
+		for i in m:
+			if i not in list_of_items:
 				list_of_items.append(i)
+	print(list_of_transactions)
+	print(list_of_items)
 
 # Read and parse parameter-list and store each value to appropriate lists
 def read_parameter(parameter_location):
@@ -42,7 +38,6 @@ def read_parameter(parameter_location):
 			s = re.findall(r'(\d+)', i)
 			item_no = int(s[0])
 			mis_value = float(s[1] + '.' + s[2])
-			print(str(item_no) + ': ' + str(mis_value))
 			mis_dict.update({item_no: mis_value})
 		elif 'SDC' in i:
 			s = re.findall(r'\d+\.\d+', i)

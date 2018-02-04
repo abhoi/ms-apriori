@@ -10,8 +10,6 @@ list_of_transactions = []
 list_of_cbt = []
 # List of items
 list_of_items = []
-# List of sorted items based on the priority
-list_of_ordered_items = []
 # Support difference constraint (0 <= phi <= 1)
 sdc = 0.0
 # Support dictionary {item_no: {support_count: }, {support: }, {mis: }}
@@ -59,40 +57,45 @@ def read_parameter(parameter_location):
 			s = [int(x) for x in s]
 			list_of_mh = s
 
-# Sort items based on key
-def sort_items_on_mis(item_list):
-	return sorted(item_list, key = mis_dict.get)
-
 # Calculate support and support-count for each unique item
 def calculate_support():
 	for transaction in list_of_transactions:
 		for item in transaction:
 			if item in list(support_dict.keys()):
-				details_dict = support_dict[item]
-				details_dict['support_count'] = details_dict['support_count'] + 1
+				support_dict[item]['support_count'] += 1
 			else:
-				details_dict = {}
-				details_dict['support_count'] = 1
-				details_dict['mis'] = mis_dict[item]
-				support_dict[item] = details_dict
-	
+				support_dict.update({item: {'support_count': 1, 'support': 0, 'mis': mis_dict[item]}})
 	transaction_len = len(list_of_transactions)
 	for item in list(support_dict.keys()):
-		details_dict = support_dict[item]
-		details_dict['support'] = round(float(details_dict['support_count'])/transaction_len, 2)
-		
+		support_dict[item]['support'] = round(float(support_dict[item]['support_count']) / transaction_len, 3)
+	list_of_items.sort(key=lambda x: mis_dict.get(x), reverse=False)
+# First pass to generate seeds L
+def init_pass(M, T):
+	L = []
+	min_mis = 0.0
+	for i in M:
+	 	if (support_dict.get(i).get('support') >= support_dict.get(i).get('mis')) and min_mis == 0.0:
+	 		min_mis = support_dict.get(i).get('mis')
+	 		L.append(i)
+	 	elif min_mis != 0.0:
+	 		if (support_dict.get(i).get('support') >= min_mis):
+	 			L.append(i)
+	generate_F1_itemsets(L)
+
+# Generate F1 item-sets
+def generate_F1_itemsets(L):
+	for i in L:
+		if (support_dict.get(i).get('support') < support_dict.get(i).get('mis')):
+			L.remove(i)
+
 # Check for command line arguments
 if len(sys.argv) == 3:
+	# Parse input and parameter files
 	read_parameter(str(sys.argv[2]))
 	read_input(str(sys.argv[1]))
 
-	list_of_ordered_items = sort_items_on_mis(list_of_items)
+	# Actual algorithm start
 	calculate_support()
-	print(list_of_items)
-	print(mis_dict)
-	print(list_of_transactions)
-	print(list_of_ordered_items)	
-	print(support_dict)
-
+	init_pass(list_of_items, list_of_transactions)
 else:
 	print("Please run as python ms-apriori.py [input_file].txt [parameter_file].txt")

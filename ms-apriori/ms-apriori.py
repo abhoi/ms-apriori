@@ -164,6 +164,7 @@ def MScandidate_gen(freq_item_set, sdc):
 	f1 = []
 	f2 = []
 	combinations = []
+	print("freq_item_set: " + str(freq_item_set))
 	for i in range(len(freq_item_set)):
 		f1 = freq_item_set[i][0:-1]
 		for j in range(i + 1, len(freq_item_set)):
@@ -172,10 +173,17 @@ def MScandidate_gen(freq_item_set, sdc):
 				# freq_item_set[i].append(freq_item_set[j][-1])
 				## PROBLEM freq_item_set[i] should not append ^
 				# MAKE ANOTHER COPY THEN STORE IN CK
-				c = freq_item_set[i]
-				c.append(freq_item_set[j][-1])
-				Ck.append(c)
+				# c = freq_item_set[i].append(freq_item_set[j][-1])
+				# c.append(freq_item_set[j][-1])
+				# freq_item_set[i].append(freq_item_set[j][-1])
+				temp_list = list(freq_item_set)
+				c1 = list(temp_list[i])
+				c2 = temp_list[j][-1]
+				c1.append(c2)
+				print(c1)
+				Ck.append(c1)
 				# Generate (k-1) subsets s for each c
+	print("freq_item_set2: " + str(freq_item_set))
 	i = 0
 	while i < len(Ck):
 		subsets = list(itertools.combinations(Ck[i], len(Ck[i]) - 1))

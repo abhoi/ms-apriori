@@ -1,6 +1,7 @@
 import sys
 import csv
 import re
+from itertools import chain, combinations
 import itertools
 
 # List of values and their respective MIS values
@@ -163,18 +164,32 @@ def MScandidate_gen(freq_item_set, sdc):
 	f1 = []
 	f2 = []
 	combinations = []
-	print(freq_item_set)
 	for i in range(len(freq_item_set)):
 		f1 = freq_item_set[i][0:-1]
 		for j in range(i + 1, len(freq_item_set)):
 			f2 = freq_item_set[j][0:-1]
 			if (f1 == f2) and (support_dict.get(freq_item_set[i][-1]).get('support') - support_dict.get(freq_item_set[j][-1]).get('support') <= sdc):
-				freq_item_set[i].append(freq_item_set[j][-1])
+				# freq_item_set[i].append(freq_item_set[j][-1])
+				## PROBLEM freq_item_set[i] should not append ^
+				# MAKE ANOTHER COPY THEN STORE IN CK
 				c = freq_item_set[i]
+				c.append(freq_item_set[j][-1])
 				Ck.append(c)
 				# Generate (k-1) subsets s for each c
-		
-
+	i = 0
+	while i < len(Ck):
+		subsets = list(itertools.combinations(Ck[i], len(Ck[i]) - 1))
+		print("Ck: " + str(Ck))
+		for s in subsets:
+			s = list(s)
+			print(s)
+			if (Ck[i][0] in s) or (support_dict.get(Ck[i][1]).get('mis') == support_dict.get(Ck[i][0]).get('mis')):
+				if s not in freq_item_set:
+					print("removing: " + str(Ck[i]))
+					Ck.remove(Ck[i])
+		i += 1
+	print("Ck after removal: " + str(Ck))
+	sys.exit(0)
 
 # Check for command line arguments
 if len(sys.argv) == 3:

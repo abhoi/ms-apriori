@@ -72,9 +72,12 @@ def calculate_support():
 
 	# For each unique item in support-dict, calculate support for each item
 	for item in list(support_dict.keys()):
-		support_dict[item]['support'] = round(float(support_dict[item]['support_count']) / len(list_of_transactions), 3)
+		support_dict[item]['support'] = round(float(support_dict[item]['support_count']) / len(list_of_transactions), 2)
 	# Sort list_of_items based on mis values
-	list_of_items.sort(key=lambda x: mis_dict.get(x), reverse=False)
+	list_of_items.sort(key=lambda x: mis_dict.get(x), reverse = False)
+	# for i in range(len(list_of_items)):
+	# 	list_of_items[i] = [list_of_items[i], mis_dict.get(list_of_items[i])]
+	# print("loi: " + str(list_of_items))
 
 # First pass to generate seeds L
 def init_pass(M, T):
@@ -92,14 +95,18 @@ def init_pass(M, T):
 	 		if (support_dict.get(i).get('support') >= min_mis):
 	 			L.append(i)
 	# Generate 1-itemsets using L
+	print("L: " + str(L) + " : " + str(len(support_dict)))
 	generate_F1_itemsets(L)
 
 # Generate F1 item-sets
 def generate_F1_itemsets(L):
 	# For each item in L, if support < mis, prune it from L
+	temp_list = []
 	for i in L:
-		if (support_dict.get(i).get('support') < support_dict.get(i).get('mis')):
-			L.remove(i)
+		if (support_dict.get(i).get('support') >= support_dict.get(i).get('mis')):
+			temp_list.append(i)
+	F1 = list(temp_list)
+	print("F1: " + str(F1))
 	generate_item_sets(L)
 
 # Generate F(k-1) item-sets
@@ -115,7 +122,6 @@ def generate_item_sets(L):
 		if k == 2:
 			print("Level 2 candidate generation")
 			Ck = level2_candidate_gen(L, sdc) # k = 2
-			print(Ck)
 			# Update c.count as 0 for each item
 			for c in Ck:
 				Ck_count_dict.update({str(c): 0})
@@ -135,28 +141,39 @@ def generate_item_sets(L):
 		for c in Ck:
 			if Ck_count_dict.get(str(c)) / len(list_of_transactions) >= support_dict.get(c[0]).get('mis'):
 				freq_item_set.append(c)
+				# print("fis after " + str(c) + " : " + str(freq_item_set))
 				# Used for rule generation (f-a)
 				# if set(c[1:]).issubset(set(t)):
 				# 	if str(c[1:]) in Ck_count_dict:
 				# 		Ck_count_dict[str(c[1:])] += 1
 				# 	else:
 				# 		Ck_count_dict.update({str(c[1:]): 1})
-		print(Ck_count_dict)
-		print(freq_item_set)
+		# print(Ck_count_dict)
+		print("FIS: " + str(freq_item_set))
 		# Increment k
 		k += 1
 
 def level2_candidate_gen(L, sdc):
 	c2 = []
-	for l in L:
+	# for l in L:
+	# 	l_mis = 0.0
+	# 	l_supp = 0.0
+	# 	if support_dict.get(l).get('support') >= support_dict.get(l).get('mis'):
+	# 		l_mis = support_dict.get(l).get('mis')
+	# 		l_supp = support_dict.get(l).get('support')
+	# 		for h in L[L.index(l) + 1:]:
+	# 			if (support_dict.get(h).get('support')) >= l_mis and (abs(support_dict.get(h).get('support') - l_supp) <= sdc):
+	# 				c2.append([l, h])
+	for l in range(len(L)):
 		l_mis = 0.0
 		l_supp = 0.0
-		if support_dict.get(l).get('support') >= support_dict.get(l).get('mis'):
-			l_mis = support_dict.get(l).get('mis')
-			l_supp = support_dict.get(l).get('support')
-			for h in L[L.index(l) + 1:]:
-				if (support_dict.get(h).get('support')) >= l_mis and ((support_dict.get(h).get('support') - l_supp) <= sdc):
-					c2.append([l, h])
+		if support_dict.get(L[l]).get('support') >= support_dict.get(L[l]).get('mis'):
+			l_mis = support_dict.get(L[l]).get('mis')
+			l_supp = support_dict.get(L[l]).get('support')
+			for h in range(l + 1, len(L)):
+	 			if (support_dict.get(L[h]).get('support')) >= l_mis and (abs(support_dict.get(L[h]).get('support') - l_supp) <= sdc):
+	 				c2.append([L[l], L[h]])
+	print("C2: " + str(c2))
 	return c2
 
 def MScandidate_gen(freq_item_set, sdc):
@@ -184,6 +201,7 @@ def MScandidate_gen(freq_item_set, sdc):
 				Ck.append(c1)
 				# Generate (k-1) subsets s for each c
 	print("freq_item_set2: " + str(freq_item_set))
+	print("Ck before removal: " +  str(Ck))
 	i = 0
 	while i < len(Ck):
 		subsets = list(itertools.combinations(Ck[i], len(Ck[i]) - 1))
@@ -197,7 +215,6 @@ def MScandidate_gen(freq_item_set, sdc):
 					Ck.remove(Ck[i])
 		i += 1
 	print("Ck after removal: " + str(Ck))
-	sys.exit(0)
 
 # Check for command line arguments
 if len(sys.argv) == 3:

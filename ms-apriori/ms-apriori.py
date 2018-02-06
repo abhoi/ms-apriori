@@ -164,6 +164,7 @@ def level2_candidate_gen(L, sdc):
 	# 		for h in L[L.index(l) + 1:]:
 	# 			if (support_dict.get(h).get('support')) >= l_mis and (abs(support_dict.get(h).get('support') - l_supp) <= sdc):
 	# 				c2.append([l, h])
+	# CHECK GOING THROUGH SUPPORT_DICT IN l
 	for l in range(len(L)):
 		l_mis = 0.0
 		l_supp = 0.0

@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[34]:
+# In[26]:
 
 # imports done
 import itertools
@@ -14,20 +14,21 @@ sdc = 0.0
 
 def inputfile():
     del transactionList[:]
-    inputFile = open(r'data-2.txt','r')
+    t = []
+    inputFile = open(r'input-data.txt','r')
     transactionString = inputFile.read();
-    transactionString = transactionString.replace('{','')
-    transactionString = transactionString.replace('}','')
-    transactionString = transactionString.replace(' ','')
-    initialList = transactionString.split('\n')
-    for transaction in initialList:
-        transactionList.append(transaction.split(',')) 
+    checkString = transactionString
+    for i in range(transactionString.count('}')):
+        m1 = checkString.index('{')
+        m2 = checkString.index('}')
+        transactionList.append(checkString[m1+1:m2].replace(' ', '').split(','))
+        checkString = checkString[m2+1:]
     inputFile.close()
 
 # Function to read parameter file
 def paramfile():
     param = []
-    parameterFile = open(r'para2-1.txt','r')
+    parameterFile = open(r'parameter-file.txt','r')
     parameterString = parameterFile.read()
     misString = parameterString.split('\n')
     s = parameterString.split('SDC')[0].split('\n')
@@ -43,17 +44,50 @@ def paramfile():
     mydict = dict((k.strip(), float(v.strip())) for k,v in 
                   (item.split('=') for item in s))
     s1 = parameterString.split('SDC')[1].split('\n')
-    sdc = float(str(s1[0].split('=')[1]).strip())
-    random = s1[1].split(':')[1].split('}')
-    must_have = s1[2].split(':')[1].replace(' ', '').split('or')
-    cannot_be_together = []
-    for random1 in random:
-        random2 = []
-        random2 = random1.strip().replace('{','').replace(' ','').replace('\'','').replace(',',' ').strip().split(' ')
-        if random2 == ['']:
-            pass
+    sdc = float(str(s1[0].split('=')[1]).strip())   
+    print("length", len(s1))
+    print(s1)
+    while len(s1) > 3:
+        s1.pop(len(s1)-1)
+    print("length", len(s1))
+    print(s1)
+    if len(s1) == 3:
+        if s1[2] == '':
+            s1.pop(2)
         else:
-            cannot_be_together.append(random2)
+            random = s1[1].split(':')[1].split('}')
+            must_have = s1[2].split(':')[1].replace(' ', '').split('or')
+            cannot_be_together = []
+            for random1 in random:
+                random2 = []
+                random2 = random1.strip().replace('{','').replace(' ','').replace('\'','').replace(',',' ').strip().split(' ')
+                if random2 == ['']:
+                    pass
+                else:
+                    cannot_be_together.append(random2)
+    if len(s1) == 1:
+        must_have = []
+        cannot_be_together = []
+    if len(s1) == 2:
+        if s1[1] == '':
+            must_have = []
+            cannot_be_together = []
+        else:
+            if s1[1].find('cannot_be_together') == -1:
+                cannot_be_together = []
+                must_have = s1[1].split(':')[1].replace(' ', '').split('or')
+            else:
+                print("here")
+                must_have = []
+                cannot_be_together = []
+                random = s1[1].split(':')[1].split('}')
+                for random1 in random:
+                    random2 = []
+                    random2 = random1.strip().replace('{','').replace(' ','').replace('\'','').replace(',',' ').strip().split(' ')
+                    if random2 == ['']:
+                        pass
+                    else:
+                        cannot_be_together.append(random2)        
     param.append(mydict)
     param.append(sdc)
     param.append(cannot_be_together)
@@ -64,17 +98,15 @@ def paramfile():
 ######## MS - Apriori Algorithm ##############
 # Function to Sort the keys based on MIS values
 def sort(combined):
+    print("combined: " + str(combined))
     combined_List = [[k,v] for k, v in combined.items()]
     combined_List.sort(key=lambda pair: pair[1][0])
+    print("combined_after_sort: " + str(combined_List))
     return combined_List
 
 # Function to generate Level-2 Candidate Generation 
 def level2candidate(combined_List, l):
     c2 = []
-    # print("L: " + str(l))
-    print("L: " + str(l))
-    for i in combined_List:
-        print(i[0], end=', ')
     for j in range(len(combined_List)):
         if combined_List[j][0] in l and combined_List[j][1][1] >= combined_List[j][1][0]:
             for i in range(j+1, len(combined_List)):
@@ -133,7 +165,7 @@ def MS_CandidateGen(ftemp, MIS_List, support_List):
     return(fjoinlist)
 
 
-# In[ ]:
+# In[27]:
 
 # Calling Input file
 inputfile()
@@ -162,21 +194,21 @@ for key in mydict:
     for transaction in transactionList:
         if key in transaction:
                 count = count + 1
-    support[key] = round(count/len(transactionList),2)
+    support[key] = count/len(transactionList)
     count = 0
 combined = dict([(k,[mydict[k],support[k]]) for k in mydict])
 MIS_List = [ [k,v] for k, v in mydict.items() ]
 support_List = [ [k,v] for k, v in support.items() ]
 print("MIS_List")
-# print(MIS_List)
+print(MIS_List)
 print("support_List")
-# print(support_List)
+print(support_List)
 
 # MS - Apriori Algorithm Starts
 # Step 1 - Sorting the list based on MIS values
 combined_List = sort(combined)
 print("combined_List with MIS and support -- Sorted based on MIS")
-# print(combined_List)
+print(combined_List)
 
 # Step 2: Init-Pass
 l = []
@@ -200,16 +232,18 @@ for i in range(len(combined_List)):
 print("l after init pass")
 print(l)
 i = 0
-print("F1 before musthave: " + str(f1) + str(len(f1)))
-while i < len(f1):
-    if f1[i] in must_have:
-        pass
-    else:
-        f1.pop(i)
-        i = i - 1
-    i = i + 1
-print("f1 after init pass")
-print(f1)
+if must_have == []:
+    pass
+else:
+    while i < len(f1):
+        if f1[i] in must_have:
+            pass
+        else:
+            f1.pop(i)
+            i = i - 1
+        i = i + 1
+    print("f1 after init pass")
+    print(f1)
 for f1obj in f1:
     count = 0
     for transaction in transactionList:
@@ -224,10 +258,9 @@ ftemp = []
 while(k == 2 or len(ftemp) > 1):
     if k == 2:
         # Calling level 2 candidate Generation function
-        print("COMBINED LIST: " + str(combined_List))
         c = level2candidate(combined_List, l)
         print("Level 2 Candidate Generation")
-        print("C2: " + str(c))       
+        print(c)       
     else:
         # Calling candidate generation function for k > 2
         c = MS_CandidateGen(ftemp, MIS_List, support_List)
@@ -240,28 +273,35 @@ while(k == 2 or len(ftemp) > 1):
     ftempwithcount = []
     ffinal = []
     for cg in c:
+        print("cg", cg)
         for transaction in transactionList:
-            if set(cg) < set(transaction):
+            if set(cg) <= set(transaction):
+                print("transaction present", transaction)
                 count = count + 1
         for i in range(len(MIS_List)):
             if cg[0] in MIS_List[i]:
                 mis = MIS_List[i][1]
                 break
+        print("mis", mis)
+        print("support", count/len(transactionList) )
         if count/len(transactionList) >= mis:
             ftemp.append(cg)
             ftempwithcount.append([cg,count])
         count = 0
     
     # Removing Cannot be together items
-    i=0
-    while i < len(ftemp):
-        for eachset in cannot_be_together:
-            if(set(eachset) <= set(ftemp[i])):
-                ftemp.pop(i)
-                ftempwithcount.pop(i)
-                i = i - 1
-                break
-        i = i + 1
+    if cannot_be_together == []:
+        pass
+    else:
+        i=0
+        while i < len(ftemp):
+            for eachset in cannot_be_together:
+                if(set(eachset) <= set(ftemp[i])):
+                    ftemp.pop(i)
+                    ftempwithcount.pop(i)
+                    i = i - 1
+                    break
+            i = i + 1
 
     # Removing sets without Must Have
     #i=0
@@ -289,7 +329,7 @@ while(k == 2 or len(ftemp) > 1):
         ftemp2 = ftemp1[0][1:]
         ftemp3 = []
         for transaction in transactionList:
-            if set(ftemp2) < set(transaction):
+            if set(ftemp2) <= set(transaction):
                 count = count + 1
         ftemp3.append(ftemp1)
         ftemp3.append(count)
@@ -301,24 +341,29 @@ while(k == 2 or len(ftemp) > 1):
     if(len(freqsetwithtail) > 0):
         f.append(freqsetwithtail)
     j = 0
-    for i in range(len(f)):
-        if i == 0:
-            pass
-        else:
-            while j < len(f[i]):
-                counter = 0
-                for subset in must_have:
-                    if str(subset) in f[i][j][0][0]:
-                        counter = 1
-                        break
-                if counter == 0:
-                    f[i].pop(j)
-                    j = j - 1
-                j = j + 1
+    # Removing sets without must_have
+    if must_have == []:
+        pass
+    else:
+        for i in range(len(f)):
+            if i == 0:
+                pass
+            else:
+                while j < len(f[i]):
+                    counter = 0
+                    for subset in must_have:
+                        if str(subset) in f[i][j][0][0]:
+                            counter = 1
+                            break
+                    if counter == 0:
+                        f[i].pop(j)
+                        j = j - 1
+                    j = j + 1
     print(f)
     k = k + 1
 
-# Writing into output file	
+import os
+# os.chdir(r'')
 outputfile = open(r'outputpatterns.txt','w+')
 
 i = 0

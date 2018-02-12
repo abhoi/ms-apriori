@@ -95,7 +95,7 @@ def init_pass(M, T):
 	 		if (support_dict.get(i).get('support') >= min_mis):
 	 			L.append(i)
 	# Generate 1-itemsets using L
-	print("L: " + str(L) + " : " + str(len(support_dict)))
+	print("L: " + str(L))
 	generate_F1_itemsets(L)
 
 # Generate F1 item-sets
@@ -129,17 +129,22 @@ def generate_item_sets(L):
 		else:
 			print("Level k > 2 candidate generation")
 			Ck = MScandidate_gen(freq_item_set, sdc)
-
 		# For each transaction t in T
 		for t in list_of_transactions:
 			# For each candidate c in Ck
 			for c in Ck:
 				# If c is contained in t, increment c.count by 1
 				if set(c).issubset(set(t)):
-					Ck_count_dict[str(c)] += 1
+					# Ck_count_dict[str(c)] += 1
+					if (Ck_count_dict.get(str(c))):
+						Ck_count_dict[str(c)] += 1
+					else:
+						Ck_count_dict.update({str(c): 1})
 		# For each candidate c in Ck, if support of c >= c[0].mis, append to Fk
+		freq_item_set = []
 		for c in Ck:
-			if Ck_count_dict.get(str(c)) / len(list_of_transactions) >= support_dict.get(c[0]).get('mis'):
+			print(str(float(Ck_count_dict.get(str(c)) / len(list_of_transactions))) + " : " + str(support_dict.get(c[0]).get('mis')))
+			if float(Ck_count_dict.get(str(c)) / len(list_of_transactions)) >= support_dict.get(c[0]).get('mis'):
 				freq_item_set.append(c)
 				# print("fis after " + str(c) + " : " + str(freq_item_set))
 				# Used for rule generation (f-a)
@@ -216,6 +221,8 @@ def MScandidate_gen(freq_item_set, sdc):
 					Ck.remove(Ck[i])
 		i += 1
 	print("Ck after removal: " + str(Ck))
+	print("Freq_after_removal: " + str(freq_item_set))
+	return Ck
 
 # Check for command line arguments
 if len(sys.argv) == 3:

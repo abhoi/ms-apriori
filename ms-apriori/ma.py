@@ -123,7 +123,7 @@ def generate_item_sets(L):
 			print("K=" + str(k) + " candidate gen")
 			Ck = MSCandidate_gen(freq_itemsets, sdc)
 
-		print("Ck length: " + str(len(Ck)))
+		# print("Ck length: " + str(len(Ck)))
 		freq_itemsets = []
 		# For each transaction t in T
 		for t in transactions:
@@ -143,7 +143,6 @@ def generate_item_sets(L):
 						Ck_tail_count.update({str(c[1:]): 1})
 
 		# For each candidate c in Ck, if c.support >= c[0].mis, append to Fk
-		print("freq_before: " + str(freq_itemsets))
 		for c in Ck:
 			if str(c) in Ck_count:
 				if float(Ck_count[str(c)]) / len(transactions) >= everything[c[0]][1]:
@@ -151,8 +150,8 @@ def generate_item_sets(L):
 					print("appended: " + str(c))
 				# else:
 				 	# print(str(float(Ck_count[str(c)]) / len(transactions)) + " !>= " + str(everything[c[0]][1]))
-		print("freq_after: " + str(freq_itemsets))
 
+		freq_itemsets_to_print = []
 		# Cannot_be_together checks
 		temp = []
 		for i in freq_itemsets:
@@ -160,21 +159,20 @@ def generate_item_sets(L):
 				if not(set(j) <= set(i)):
 					temp.append(i)
 					break
-		freq_itemsets = list(temp)
-		print("FIS after CBT: " + str(freq_itemsets))
+		freq_itemsets_to_print = list(temp)
 
 		# Must_have checks
 		temp2 = []
-		for i in freq_itemsets:
+		for i in freq_itemsets_to_print:
 			for j in must_haves:
 				if j in i:
 					temp2.append(i)
 					break
-		freq_itemsets = list(temp2)
-		print("FIS after MH: " + str(freq_itemsets))
+		freq_itemsets_to_print = list(temp2)
 
-		# USE FREQ_ITEMSETS BEFORE CBT AND MH TO K+1!!!!!!
-		# print("FIS: " + str(freq_itemsets))
+		print("Freq after all for k" + str(k) + ": " + str(freq_itemsets))
+		print("Freq to print for k" + str(k) + ": " + str(freq_itemsets_to_print))
+		# USE COUNT AND C.COUNT TO CHECK TO PRUNE FIS!!!
 		k += 1
 
 def L2candidate_gen(L, sdc):

@@ -15,7 +15,7 @@ sdc = 0.0
 def inputfile():
     del transactionList[:]
     t = []
-    inputFile = open(r'data-2.txt','r')
+    inputFile = open(r'input-data.txt','r')
     transactionString = inputFile.read();
     checkString = transactionString
     for i in range(transactionString.count('}')):
@@ -28,7 +28,7 @@ def inputfile():
 # Function to read parameter file
 def paramfile():
     param = []
-    parameterFile = open(r'para2-2.txt','r')
+    parameterFile = open(r'parameter-file.txt','r')
     parameterString = parameterFile.read()
     misString = parameterString.split('\n')
     s = parameterString.split('SDC')[0].split('\n')
@@ -163,6 +163,7 @@ def MS_CandidateGen(ftemp, MIS_List, support_List):
             if i == len(fjoinlist):
                 break
         i = i + 1
+    # print("fjoinlist: " + str(fjoinlist))
     return(fjoinlist)
 
 
@@ -269,7 +270,7 @@ while(k == 2 or len(ftemp) > 1):
         # Calling candidate generation function for k > 2
         c = MS_CandidateGen(ftemp, MIS_List, support_List)
         print('Level K > 2 Candidate Generation')
-        print(c)
+        print("k" + str(k) + " Ck: " + str(c))
     # Checking each c value and calculating f value
     count = 0
     mis = 0

@@ -2,6 +2,7 @@ import sys
 import csv
 import re
 from collections import OrderedDict
+import itertools
 
 transactions = []
 cannot_be_together = []
@@ -94,7 +95,7 @@ def generate_F1_itemsets(L):
 			temp.append(i)
 	F1 = list(temp)
 	f_temp = []
-	# Must-have check
+	# Must_haves check
 	for i in F1:
 		if i[0] in must_haves:
 			f_temp.append(i[0])
@@ -113,6 +114,7 @@ def generate_item_sets(L):
 	Ck_tail_count = {}
 	# For k=2 or k>=2 and while Fk != empty
 	while (k == 2 or len(freq_itemsets) > 0):
+		print("freq_before_all: " + str(freq_itemsets))
 		# If k == 2, run generate 2-itemsets
 		if k == 2:
 			print("K=2 candidate gen")
@@ -121,6 +123,8 @@ def generate_item_sets(L):
 			print("K=" + str(k) + " candidate gen")
 			Ck = MSCandidate_gen(freq_itemsets, sdc)
 
+		print("Ck length: " + str(len(Ck)))
+		freq_itemsets = []
 		# For each transaction t in T
 		for t in transactions:
 			# For each candidate c in Ck
@@ -139,6 +143,7 @@ def generate_item_sets(L):
 						Ck_tail_count.update({str(c[1:]): 1})
 
 		# For each candidate c in Ck, if c.support >= c[0].mis, append to Fk
+		print("freq_before: " + str(freq_itemsets))
 		for c in Ck:
 			if str(c) in Ck_count:
 				if float(Ck_count[str(c)]) / len(transactions) >= everything[c[0]][1]:
@@ -146,7 +151,30 @@ def generate_item_sets(L):
 					print("appended: " + str(c))
 				# else:
 				 	# print(str(float(Ck_count[str(c)]) / len(transactions)) + " !>= " + str(everything[c[0]][1]))
-		print("FIS: " + str(freq_itemsets))
+		print("freq_after: " + str(freq_itemsets))
+
+		# Cannot_be_together checks
+		temp = []
+		for i in freq_itemsets:
+			for j in cannot_be_together:
+				if not(set(j) <= set(i)):
+					temp.append(i)
+					break
+		freq_itemsets = list(temp)
+		print("FIS after CBT: " + str(freq_itemsets))
+
+		# Must_have checks
+		temp2 = []
+		for i in freq_itemsets:
+			for j in must_haves:
+				if j in i:
+					temp2.append(i)
+					break
+		freq_itemsets = list(temp2)
+		print("FIS after MH: " + str(freq_itemsets))
+
+		# USE FREQ_ITEMSETS BEFORE CBT AND MH TO K+1!!!!!!
+		# print("FIS: " + str(freq_itemsets))
 		k += 1
 
 def L2candidate_gen(L, sdc):
@@ -171,8 +199,29 @@ def MSCandidate_gen(freq_itemsets, sdc):
 		f1 = freq_itemsets[i][0:-1]
 		for j in range(i + 1, len(freq_itemsets)):
 			f2 = freq_itemsets[j][0:-1]
-			if (f1 == f2) and ()
-	sys.exit(0)
+			# print(everything[freq_itemsets[i][-1]][0])
+			if (f1 == f2) and abs(everything[freq_itemsets[i][-1]][0] - everything[freq_itemsets[i][-1]][0]) <= sdc:
+				temp = list(freq_itemsets)
+				c1 = list(temp[i])
+				c2 = temp[j][-1]
+				c1.append(c2)
+				Ck.append(c1)
+
+	print("F2: " + str(freq_itemsets))
+	print("Ck before removal: " + str(Ck))
+
+	i = 0
+	while i < len(Ck):
+		subsets = list(itertools.combinations(Ck[i], len(Ck[i]) - 1))
+		for s in subsets:
+			s = list(s)
+			if (Ck[i][0] in s) or (everything[Ck[i][1]][1] == everything[Ck[i][1]][1]):
+				if s not in freq_itemsets:
+					print("removing: " + str(Ck[i]))
+					Ck.remove(Ck[i])
+		i += 1
+	print("Ck after removal: " + str(Ck))
+	return Ck
 
 if len(sys.argv) == 3:
 	read_input(str(sys.argv[1]))

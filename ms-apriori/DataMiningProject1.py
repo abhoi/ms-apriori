@@ -15,7 +15,7 @@ sdc = 0.0
 def inputfile():
     del transactionList[:]
     t = []
-    inputFile = open(r'input-data.txt','r')
+    inputFile = open(r'data-2.txt','r')
     transactionString = inputFile.read();
     checkString = transactionString
     for i in range(transactionString.count('}')):
@@ -28,7 +28,7 @@ def inputfile():
 # Function to read parameter file
 def paramfile():
     param = []
-    parameterFile = open(r'parameter-file.txt','r')
+    parameterFile = open(r'para2-2.txt','r')
     parameterString = parameterFile.read()
     misString = parameterString.split('\n')
     s = parameterString.split('SDC')[0].split('\n')
@@ -115,6 +115,7 @@ def level2candidate(combined_List, l):
                     temp.append(combined_List[j][0])
                     temp.append(combined_List[i][0])
                     c2.append(temp)
+    print("Length c2: " + str(len(c2)))
     return c2
 
 # Function to get MIS of an element 
@@ -231,6 +232,8 @@ for i in range(len(combined_List)):
             l.append(combined_List[i][0])
 print("l after init pass")
 print(l)
+
+print("F1 before must-have " + str(f1))
 i = 0
 if must_have == []:
     pass
@@ -243,6 +246,7 @@ else:
             i = i - 1
         i = i + 1
     print("f1 after init pass")
+    print("l length: " + str(len(l)))
     print(f1)
 for f1obj in f1:
     count = 0
@@ -273,22 +277,24 @@ while(k == 2 or len(ftemp) > 1):
     ftempwithcount = []
     ffinal = []
     for cg in c:
-        print("cg", cg)
+        # print("cg", cg)
         for transaction in transactionList:
             if set(cg) <= set(transaction):
-                print("transaction present", transaction)
+                # print("transaction present", transaction)
                 count = count + 1
         for i in range(len(MIS_List)):
             if cg[0] in MIS_List[i]:
                 mis = MIS_List[i][1]
                 break
-        print("mis", mis)
-        print("support", count/len(transactionList) )
+        # print("mis", mis)
+        # print("support", count/len(transactionList) )
         if count/len(transactionList) >= mis:
             ftemp.append(cg)
             ftempwithcount.append([cg,count])
         count = 0
     
+    print("ftemp: " + str(ftemp))
+
     # Removing Cannot be together items
     if cannot_be_together == []:
         pass
@@ -302,6 +308,8 @@ while(k == 2 or len(ftemp) > 1):
                     i = i - 1
                     break
             i = i + 1
+
+
 
     # Removing sets without Must Have
     #i=0

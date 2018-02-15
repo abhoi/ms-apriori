@@ -17,7 +17,7 @@ def read_input(input_location):
 	for mindex, m in enumerate(input_file):
 		# Find all ints, put into a list, then append them to list_of_items
 		m = re.findall(r'\d+', m)
-		m = list(map(int, m))
+		# m = list(map(int, m))
 		transactions.append(m)
 		for i in m:
 			if i not in everything.keys():
@@ -41,7 +41,8 @@ def read_parameter(parameter_location):
 		# Parse MIS to mis_dict
 		if 'MIS' in i:
 			s = re.findall(r'(\d+)', i)
-			item = int(s[0])
+			# item = int(s[0])
+			item = s[0]
 			mis = float(s[1] + '.' + s[2])
 			global everything
 			if item in everything.keys():

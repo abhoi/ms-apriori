@@ -15,7 +15,7 @@ sdc = 0.0
 def inputfile():
     del transactionList[:]
     t = []
-    inputFile = open(r'input-data.txt','r')
+    inputFile = open(r'data-2.txt','r')
     transactionString = inputFile.read();
     checkString = transactionString
     for i in range(transactionString.count('}')):
@@ -28,7 +28,7 @@ def inputfile():
 # Function to read parameter file
 def paramfile():
     param = []
-    parameterFile = open(r'parameter-file.txt','r')
+    parameterFile = open(r'para2-1.txt','r')
     parameterString = parameterFile.read()
     misString = parameterString.split('\n')
     s = parameterString.split('SDC')[0].split('\n')

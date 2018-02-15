@@ -1,22 +1,20 @@
 Frequent 1-itemsets
 
-	6 : {20}
+	381 : {4}
+	419 : {10}
+	388 : {11}
+	462 : {47}
+	468 : {2}
+	451 : {16}
+	443 : {23}
+	404 : {26}
+	808 : {17}
+	678 : {19}
+	484 : {32}
+	667 : {28}
+	703 : {37}
+	775 : {43}
+	802 : {6}
 
-	Total number of frequent 1-itemsets = 1
-
-Frequent 2-itemsets
-
-	6 : {80, 20}
-Tail count =6
-	2 : {90, 50}
-Tail count =2
-
-	Total number of frequent 2-itemsets = 2
-
-Frequent 3-itemsets
-
-	1 : {100, 140, 120}
-Tail count =1
-
-	Total number of frequent 3-itemsets = 1
+	Total number of frequent 1-itemsets = 15
 

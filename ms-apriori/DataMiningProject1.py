@@ -28,7 +28,7 @@ def inputfile():
 # Function to read parameter file
 def paramfile():
     param = []
-    parameterFile = open(r'para2-1.txt','r')
+    parameterFile = open(r'para2-2.txt','r')
     parameterString = parameterFile.read()
     misString = parameterString.split('\n')
     s = parameterString.split('SDC')[0].split('\n')

@@ -28,7 +28,7 @@ def inputfile():
 # Function to read parameter file
 def paramfile():
     param = []
-    parameterFile = open(r'para2-2.txt','r')
+    parameterFile = open(r'para2-1.txt','r')
     parameterString = parameterFile.read()
     misString = parameterString.split('\n')
     s = parameterString.split('SDC')[0].split('\n')
@@ -368,7 +368,7 @@ while(k == 2 or len(ftemp) > 1):
                         f[i].pop(j)
                         j = j - 1
                     j = j + 1
-    print(f)
+    print("FIN: " + str(f))
     k = k + 1
 
 import os

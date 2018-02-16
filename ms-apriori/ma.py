@@ -114,6 +114,16 @@ def generate_F1_itemsets(L):
 		if i in F1:
 			fis_final.append([i, f1_count.get(i)[0], 0])
 	print("FIS 1 final: " + str(fis_final))
+	output_patterns = open(r'outputpatterns2.txt', 'w+')
+	if len(fis_final) > 0:
+		output_patterns.write("Frequent 1-itemsets\n\n")
+	for i in fis_final:
+		output_patterns.write('\t' + str(i[1]) + ' : ' + '{' + str(i[0]) + '}\n')
+	output_patterns.write('\n')
+	output_patterns.write('\tTotal number of frequent 1-itemsets = ' + str(len(fis_final)) + '\n')
+	output_patterns.close()
+	# global fis_final
+	# fis_final = []
 	# Generate k >= 2 item-sets
 	generate_item_sets(L)
 
@@ -128,6 +138,7 @@ def generate_item_sets(L):
 	Ck_tail_count = {}
 	# For k=2 or k>=2 and while Fk != empty
 	while (k == 2 or len(freq_itemsets) > 0):
+		fis_final = []
 		# If k == 2, run generate 2-itemsets
 		if k == 2:
 			print("K=2 candidate gen")
@@ -189,6 +200,17 @@ def generate_item_sets(L):
 		freq_itemsets_to_print = list(temp2)
 		for i in freq_itemsets_to_print:
 			fis_final.append([i, Ck_count.get(str(i)), Ck_tail_count.get(str(i))])
+		
+		if len(freq_itemsets_to_print) < 1:
+			sys.exit(0)
+		output_patterns = open(r'outputpatterns2.txt', 'a+')
+		output_patterns.write('\nFrequent ' + str(k) + '-itemsets\n\n')
+		for i in fis_final:
+			inside = ','.join(map(str, i[0]))
+			output_patterns.write('\t' + str(i[1]) + ' : ' + '{' + str(inside) + '}\n')
+			output_patterns.write('Tail count = ' + str(i[2]) + '\n')
+		output_patterns.write('\n' + '\t' + 'Total number of frequent ' + str(k) + '-itemsets = ' + str(len(fis_final)) + '\n')
+		output_patterns.close()
 		# print("Freq after all for k" + str(k) + ": " + str(freq_itemsets))
 		# print("Freq to print for k" + str(k) + ": " + str(freq_itemsets_to_print))
 		# print("fis_final: " + str(fis_final))
@@ -245,11 +267,9 @@ if len(sys.argv) == 3:
 	read_input(str(sys.argv[1]))
 	read_parameter(str(sys.argv[2]))
 	print("fis_final: " + str(fis_final))
-	output_patterns = open(r'outputpatterns2.txt', 'w+')
-	for i in range(len(fis_final)):
-		output_patterns.write('Frequent ' + str(i + 1) + '-itemsets\n')
-		output_patterns.write('\n')
-		output_patterns.write('\t' + str(fis_final[i][1]) + ' : ' + str(fis_final[i][0]) + '\n')
-	output_patterns.close()
+	# for i in range(len(fis_final)):
+	# 	output_patterns.write('Frequent ' + str(i + 1) + '-itemsets\n')
+	# 	output_patterns.write('\n')
+	# 	output_patterns.write('\t' + str(fis_final[i][1]) + ' : ' + str(fis_final[i][0]) + '\n')
 else:
 	print("Please run as python ms-apriori.py [input_file].txt [parameter_file].txt")

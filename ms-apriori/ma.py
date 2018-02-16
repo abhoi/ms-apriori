@@ -32,7 +32,7 @@ def read_input(input_location):
 	f1_count = copy.deepcopy(everything)
 	# For every unique item in everything, calculate and update support for each item
 	for k, v in everything.items():
-		v[0] = v[0] / len(transactions)
+		v[0] = float(v[0]) / len(transactions)
 
 def sort_everything(everything):
 	everything = OrderedDict(sorted(everything.items(), key=lambda t: t[0]))
@@ -101,15 +101,21 @@ def generate_F1_itemsets(L):
 		if i[1][0] >= i[1][1]:
 			temp.append(i)
 	F1 = list(temp)
-	f_temp = []
-	# print("F1 before must-haves: " + str(F1))
+	print("F1 before must-haves: " + str(F1))
 	# Must_haves check
-	for i in F1:
-		if i[0] in must_haves:
+	if len(must_haves) > 0:
+		f_temp = []
+		for i in F1:
+			if i[0] in must_haves:
+				f_temp.append(i[0])
+				F1 = list(f_temp)
+	else:
+		f_temp = []
+		for i in F1:
 			f_temp.append(i[0])
-	F1 = list(f_temp)
+			F1 = list(f_temp)
 	# print("F1: " + str(F1))
-	# print(f1_count)
+	print(f1_count)
 	for i in f1_count:
 		if i in F1:
 			fis_final.append([i, f1_count.get(i)[0], 0])
@@ -181,26 +187,33 @@ def generate_item_sets(L):
 		# print("Ck_tail_count: " + str(Ck_tail_count))
 		freq_itemsets_to_print = []
 		# Cannot_be_together checks
-		temp = []
-		for i in freq_itemsets:
-			for j in cannot_be_together:
-				if not(set(j) <= set(i)):
-					temp.append(i)
-					break
-		freq_itemsets_to_print = list(temp)
+		if len(cannot_be_together) > 0:
+			temp = []
+			for i in freq_itemsets:
+				for j in cannot_be_together:
+					if not(set(j) <= set(i)):
+						temp.append(i)
+						break
+			freq_itemsets_to_print = list(temp)
+		else:
+			temp = []
+			for i in freq_itemsets:
+				temp.append(i)
+			freq_itemsets_to_print = list(temp)
 		# print("between cbt and mh: " + str(freq_itemsets_to_print))
 		# Must_have checks
-		temp2 = []
-		for i in freq_itemsets_to_print:
-			for j in must_haves:
-				if j in i:
-					temp2.append(i)
-					# print("appended: " + str(i))
-					break
-		freq_itemsets_to_print = list(temp2)
+		if len(must_haves) > 0:
+			temp2 = []
+			for i in freq_itemsets_to_print:
+				for j in must_haves:
+					if j in i:
+						temp2.append(i)
+						# print("appended: " + str(i))
+						break
+			freq_itemsets_to_print = list(temp2)
 		for i in freq_itemsets_to_print:
 			fis_final.append([i, Ck_count.get(str(i)), Ck_tail_count.get(str(i))])
-		
+
 		if len(freq_itemsets_to_print) < 1:
 			sys.exit(0)
 		output_patterns = open(r'outputpatterns2.txt', 'a+')

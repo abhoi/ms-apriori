@@ -101,7 +101,7 @@ def generate_F1_itemsets(L):
 		if i[1][0] >= i[1][1]:
 			temp.append(i)
 	F1 = list(temp)
-	print("F1 before must-haves: " + str(F1))
+	# print("F1 before must-haves: " + str(F1))
 	# Must_haves check
 	if len(must_haves) > 0:
 		f_temp = []
@@ -115,7 +115,7 @@ def generate_F1_itemsets(L):
 			f_temp.append(i[0])
 			F1 = list(f_temp)
 	# print("F1: " + str(F1))
-	print(f1_count)
+	# print(f1_count)
 	for i in f1_count:
 		if i in F1:
 			fis_final.append([i, f1_count.get(i)[0], 0])
@@ -123,10 +123,10 @@ def generate_F1_itemsets(L):
 	output_patterns = open(r'outputpatterns2.txt', 'w+')
 	if len(fis_final) > 0:
 		output_patterns.write("Frequent 1-itemsets\n\n")
-	for i in fis_final:
-		output_patterns.write('\t' + str(i[1]) + ' : ' + '{' + str(i[0]) + '}\n')
-	output_patterns.write('\n')
-	output_patterns.write('\tTotal number of frequent 1-itemsets = ' + str(len(fis_final)) + '\n')
+		for i in fis_final:
+			output_patterns.write('\t' + str(i[1]) + ' : ' + '{' + str(i[0]) + '}\n')
+		output_patterns.write('\n')
+		output_patterns.write('\tTotal number of frequent 1-itemsets = ' + str(len(fis_final)) + '\n')
 	output_patterns.close()
 	# global fis_final
 	# fis_final = []
@@ -226,7 +226,7 @@ def generate_item_sets(L):
 		output_patterns.close()
 		# print("Freq after all for k" + str(k) + ": " + str(freq_itemsets))
 		# print("Freq to print for k" + str(k) + ": " + str(freq_itemsets_to_print))
-		# print("fis_final: " + str(fis_final))
+		print("fis_final for : " + str(k) + " : " + str(fis_final))
 		# USE COUNT AND C.COUNT TO CHECK TO PRUNE FIS!!!
 		k += 1
 

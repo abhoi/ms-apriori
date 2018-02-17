@@ -17,16 +17,6 @@ Frequent 1-itemsets
 
 Frequent 2-itemsets
 
-	194 : {10,19}
-Tail count = 678
-	150 : {10,32}
-Tail count = 484
-	150 : {10,33}
-Tail count = 516
-	183 : {10,28}
-Tail count = 667
-	205 : {10,37}
-Tail count = 703
 	169 : {2,16}
 Tail count = 451
 	202 : {2,19}
@@ -39,5 +29,15 @@ Tail count = 667
 Tail count = 703
 	165 : {4,28}
 Tail count = 667
+	194 : {10,19}
+Tail count = 678
+	150 : {10,32}
+Tail count = 484
+	150 : {10,33}
+Tail count = 516
+	183 : {10,28}
+Tail count = 667
+	205 : {10,37}
+Tail count = 703
 
 	Total number of frequent 2-itemsets = 11

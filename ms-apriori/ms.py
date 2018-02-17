@@ -20,7 +20,11 @@ def read_input(input_location):
 	input_file = open(input_location, "r")
 	for mindex, m in enumerate(input_file):
 		# Find all ints, put into a list, then append them to list_of_items
-		m = re.findall(r'\d+', m)
+		# m = re.findall(r'\d+', m)
+		m = m.replace('\n', '')
+		m = m.replace('{', '')
+		m = m.replace('}', '')
+		m = m.split(', ')
 		# m = list(map(int, m))
 		transactions.append(m)
 		for i in m:
@@ -46,10 +50,16 @@ def read_parameter(parameter_location):
 	for index, i in enumerate(parameter_file):
 		# Parse MIS to mis_dict
 		if 'MIS' in i:
-			s = re.findall(r'(\d+)', i)
+			# s = re.findall(r'(\d+)', i)
 			# item = int(s[0])
-			item = s[0]
-			mis = float(s[1] + '.' + s[2])
+			item = i.split(')')
+			mis = re.findall(r'\d+', item[1])
+			mis = float(mis[0] + '.' + mis[1])
+			#print(mis)
+			item = item[0].split('(')[1]
+			#print(item)
+			# item = s[0]
+			# mis = float(s[1] + '.' + s[2])
 			global everything
 			if item in everything.keys():
 				everything[item].append(mis)
@@ -60,18 +70,34 @@ def read_parameter(parameter_location):
 			sdc = float(s[0])
 		# Parse cannot_be_together to list_of_cbt
 		elif 'cannot_be_together' in i:
-			s = re.findall(r'{\d+[, \d+]*}', i)
-			for e in s:
-				e = re.findall(r'\d+', e)
-				# e = [int(x) for x in e]
-				global cannot_be_together
-				cannot_be_together.append(e)
+			# s = re.findall(r'{\d+[, \d+]*}', i)
+			# for e in s:
+			# 	e = re.findall(r'\d+', e)
+			# 	# e = [int(x) for x in e]
+			# 	global cannot_be_together
+			# 	cannot_be_together.append(e)
+			# s = re.findall(r'{.*[, .*]*}', i)
+			#print(s)
+			# s = s.split(', ')
+			#print(cannot_be_together)
+			# s = re.findall(r'{.*}+', i)
+			i = i.split('cannot_be_together: ')[1]
+			i = i.replace('\n', '')
+			i = i.split('}, ')
+			i = [x.replace('{', '') for x in i]
+			i = [x.replace('}', '') for x in i]
+			i = [x.split(', ') for x in i]
+			for j in i:
+				cannot_be_together.append(j)
 		# Parse must-have to list_of_mh
 		elif 'must-have' in i:
-			s = re.findall(r'\d+', i)
+			# s = re.findall(r'\d+', i)
 			# s = [int(x) for x in s]
+			s = i.replace('must-have: ', '')
+			s = s.split(' or ')
 			global must_haves
 			must_haves = list(s)
+			print(must_haves)
 	sort_everything(everything)
 
 # First pass to generate seeds L
@@ -120,7 +146,7 @@ def generate_F1_itemsets(L):
 		if i in F1:
 			fis_final.append([i, f1_count.get(i)[0], 0])
 	print("FIS 1 final: " + str(fis_final))
-	output_patterns = open(r'outputpatterns2.txt', 'w+')
+	output_patterns = open(r'outputpatterns3.txt', 'w+')
 	if len(fis_final) > 0:
 		output_patterns.write("Frequent 1-itemsets\n\n")
 		for i in fis_final:
@@ -216,7 +242,7 @@ def generate_item_sets(L):
 
 		if len(freq_itemsets_to_print) < 1:
 			sys.exit(0)
-		output_patterns = open(r'outputpatterns2.txt', 'a+')
+		output_patterns = open(r'outputpatterns3.txt', 'a+')
 		output_patterns.write('\nFrequent ' + str(k) + '-itemsets\n\n')
 		for i in fis_final:
 			inside = ','.join(map(str, i[0]))

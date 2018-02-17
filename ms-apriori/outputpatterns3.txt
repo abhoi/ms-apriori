@@ -1,0 +1,43 @@
+Frequent 1-itemsets
+
+	468 : {bread}
+	802 : {tea}
+	808 : {hat}
+	703 : {orange}
+	381 : {milk}
+	451 : {sweater}
+	678 : {shirt}
+	775 : {cabbage}
+	419 : {chips}
+	404 : {speaker}
+	667 : {sofa}
+	484 : {frame}
+
+	Total number of frequent 1-itemsets = 12
+
+Frequent 2-itemsets
+
+	169 : {bread,sweater}
+Tail count = 451
+	202 : {bread,shirt}
+Tail count = 678
+	151 : {bread,blazer}
+Tail count = 516
+	222 : {bread,orange}
+Tail count = 703
+	191 : {bread,sofa}
+Tail count = 667
+	150 : {chips,frame}
+Tail count = 484
+	194 : {chips,shirt}
+Tail count = 678
+	150 : {chips,blazer}
+Tail count = 516
+	205 : {chips,orange}
+Tail count = 703
+	183 : {chips,sofa}
+Tail count = 667
+	165 : {milk,sofa}
+Tail count = 667
+
+	Total number of frequent 2-itemsets = 11

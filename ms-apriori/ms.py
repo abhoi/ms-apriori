@@ -20,7 +20,6 @@ def read_input(input_location):
 	input_file = open(input_location, "r")
 	for mindex, m in enumerate(input_file):
 		# Find all ints, put into a list, then append them to list_of_items
-		# m = re.findall(r'\d+', m)
 		m = m.replace('\n', '')
 		m = m.replace('{', '')
 		m = m.replace('}', '')

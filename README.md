@@ -2,9 +2,9 @@
 
 ## Implementation of MS-Apriori Algorithm in Python
 
-### Files:
-1. input_data.txt
-2. paramter-list.txt
+### How to Run
+- python ma.py [input.txt] [parameterlist.txt]
+- ms.py runs for strings (may have issues with sorting strings)
 
 ### Original Paper for Apriori Algorithm:
 
